@@ -36,7 +36,7 @@ const verifyTokenAndAdmin = (req, res, next) => {
         if (req.user.isAdmin) {
             next()
         } else {
-            res.status(403).json("Out of bounds")
+            res.status(403).json("You are not authorised for this action")
         }
     })
 }

@@ -20,7 +20,8 @@ router.post("/new", verifyTokenAndAdmin, async (req, res) => {
 
 })
 
-router.get("/find/:id", verifyToken, async (req, res) => {
+//Get A Product
+router.get("/find/:id", async (req, res) => {
 
     const product = await Product.findById(req.params.id)
 
@@ -36,7 +37,7 @@ router.get("/find/:id", verifyToken, async (req, res) => {
 })
 
 //Update
-router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
 
     try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
@@ -48,45 +49,47 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
     }
 })
 
-// //Delete
-// router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
-//     try {
-//         await User.findByIdAndDelete(req.params.id)
+//Delete
+router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id)
 
-//         res.status(200).json('User deleted')
+        res.status(200).json('Product deleted')
 
-//     } catch (error) {
-//         res.status(500).json(error)
-//     }
-// })
+    } catch (error) {
+        res.status(500).json(error)
+    }
+})
 
-// //Get a user
-// router.get("/find/:id", verifyTokenAndAdmin, async (req, res) => {
-//     try {
-//         const user = await User.findById(req.params.id)
 
-//         const { password, ...others } = user._doc
 
-//         res.status(200).json(others)
+//Get All Products
+router.get("/", async (req, res) => {
+    const catQuery = req.query.category
+    const newQuery = req.query.new
+    console.log(catQuery, newQuery);
 
-//     } catch (error) {
-//         res.status(500).json(error)
-//     }
-// })
+    try {
 
-// //Get All Users
-// router.get("/", verifyTokenAndAdmin, async (req, res) => {
-//     const query = req.query.new
+        let products;
 
-//     try {
-//         const users = query ? await User.find().sort({ _id: -1 }).limit(5) : await User.find()
+        if (catQuery) {
+            products = await Product.find({ category: { $in: [catQuery], } }).limit(10)
 
-//         res.status(200).json(users)
+        }
+        else if (newQuery) {
+            products = await Product.find().sort({ createdAt: -1 }).limit(1)
+        }
+        else {
+            products = await Product.find()
+        }
 
-//     } catch (error) {
-//         res.status(500).json(error)
-//     }
-// })
+        res.status(200).json(products)
+
+    } catch (error) {
+        res.status(500).json(error)
+    }
+})
 
 
 // //get Users stats
