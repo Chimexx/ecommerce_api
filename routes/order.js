@@ -16,7 +16,7 @@ router.post("/new", verifyToken, async (req, res) => {
 });
 
 //Get User Orders
-router.get("/find/:userId", verifyToken, async (req, res) => {
+router.get("/find/:userId", verifyTokenAndAuthorization, async (req, res) => {
 	try {
 		const order = await Order.findOne({ userId: req.params.userId });
 
@@ -29,7 +29,7 @@ router.get("/find/:userId", verifyToken, async (req, res) => {
 //Update Order
 router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
 	try {
-		const updatedOrder = await Product.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+		const updatedOrder = await Order.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
 
 		res.status(200).json(updatedOrder);
 	} catch (error) {
@@ -60,7 +60,6 @@ router.get("/", verifyTokenAndAdmin, async (req, res) => {
 });
 
 //get order stats
-
 //Get Monthly Income
 router.get("/income", verifyTokenAndAdmin, async (req, res) => {
 	const productId = req.query.pid;
